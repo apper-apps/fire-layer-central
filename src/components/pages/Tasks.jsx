@@ -49,16 +49,16 @@ const Tasks = () => {
 
     // Apply type filter
     if (activeFilter !== "all") {
-      filtered = filtered.filter(task => task.taskType === activeFilter);
+filtered = filtered.filter(task => task.task_type_c === activeFilter);
     }
 
     // Apply search filter
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(task =>
-        task.title.toLowerCase().includes(searchLower) ||
-        task.description.toLowerCase().includes(searchLower) ||
-        task.assignee.toLowerCase().includes(searchLower)
+        task.title_c?.toLowerCase().includes(searchLower) ||
+        task.description_c?.toLowerCase().includes(searchLower) ||
+        task.assignee_c?.toLowerCase().includes(searchLower)
       );
     }
 

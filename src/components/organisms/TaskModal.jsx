@@ -23,12 +23,12 @@ const TaskModal = ({ isOpen, onClose, task, onSave }) => {
   useEffect(() => {
     if (task) {
       setFormData({
-        title: task.title || "",
-        description: task.description || "",
-        taskType: task.taskType || "React",
-        assignee: task.assignee || "",
-        dueDate: task.dueDate || "",
-        status: task.status || "To Do"
+title: task.title_c || "",
+        description: task.description_c || "",
+        taskType: task.task_type_c || "React",
+        assignee: task.assignee_c || "",
+        dueDate: task.due_date_c || "",
+        status: task.status_c || "To Do"
       });
     } else {
       setFormData({

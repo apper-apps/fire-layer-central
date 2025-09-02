@@ -35,12 +35,28 @@ const Header = ({ onMenuToggle, isMobileMenuOpen }) => {
         <div className="flex-1" />
 
         {/* Right side actions */}
-        <div className="flex items-center gap-2">
+<div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="hover:bg-slate-100">
             <ApperIcon name="Bell" className="h-5 w-5" />
           </Button>
           <Button variant="ghost" size="icon" className="hover:bg-slate-100">
             <ApperIcon name="Settings" className="h-5 w-5" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="hover:bg-slate-100"
+            onClick={async () => {
+              try {
+                const { ApperUI } = window.ApperSDK;
+                await ApperUI.logout();
+                window.location.href = '/login';
+              } catch (error) {
+                console.error("Logout failed:", error);
+              }
+            }}
+          >
+            <ApperIcon name="LogOut" className="h-5 w-5" />
           </Button>
         </div>
       </div>

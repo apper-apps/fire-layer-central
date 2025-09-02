@@ -1,72 +1,288 @@
-import tasksData from "@/services/mockData/tasks.json";
-
 class TasksService {
   constructor() {
-    this.tasks = [...tasksData];
-  }
-
-  async delay() {
-    return new Promise(resolve => setTimeout(resolve, Math.random() * 300 + 200));
+    const { ApperClient } = window.ApperSDK;
+    this.apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
+    this.tableName = 'task_c';
   }
 
   async getAll() {
-    await this.delay();
-    return [...this.tasks];
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "title_c" } },
+          { field: { Name: "description_c" } },
+          { field: { Name: "task_type_c" } },
+          { field: { Name: "assignee_c" } },
+          { field: { Name: "due_date_c" } },
+          { field: { Name: "status_c" } },
+          { field: { Name: "created_at_c" } },
+          { field: { Name: "updated_at_c" } }
+        ],
+        orderBy: [
+          {
+            fieldName: "created_at_c",
+            sorttype: "DESC"
+          }
+        ]
+      };
+      
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+      
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching tasks:", error?.response?.data?.message);
+      } else {
+        console.error(error);
+      }
+      return [];
+    }
   }
 
   async getById(id) {
-    await this.delay();
-    const task = this.tasks.find(task => task.Id === parseInt(id));
-    return task ? { ...task } : null;
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "title_c" } },
+          { field: { Name: "description_c" } },
+          { field: { Name: "task_type_c" } },
+          { field: { Name: "assignee_c" } },
+          { field: { Name: "due_date_c" } },
+          { field: { Name: "status_c" } },
+          { field: { Name: "created_at_c" } },
+          { field: { Name: "updated_at_c" } }
+        ]
+      };
+      
+      const response = await this.apperClient.getRecordById(this.tableName, id, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+      
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching task with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error);
+      }
+      return null;
+    }
   }
 
   async create(taskData) {
-    await this.delay();
-    const highestId = this.tasks.reduce((max, task) => Math.max(max, task.Id), 0);
-    const newTask = {
-      ...taskData,
-      Id: highestId + 1,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    this.tasks.push(newTask);
-    return { ...newTask };
+    try {
+      const params = {
+        records: [{
+          Name: taskData.title_c || taskData.Name,
+          title_c: taskData.title_c,
+          description_c: taskData.description_c,
+          task_type_c: taskData.task_type_c,
+          assignee_c: taskData.assignee_c,
+          due_date_c: taskData.due_date_c,
+          status_c: taskData.status_c,
+          created_at_c: new Date().toISOString(),
+          updated_at_c: new Date().toISOString()
+        }]
+      };
+      
+      const response = await this.apperClient.createRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+      
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create tasks ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+        }
+        
+        return successfulRecords.length > 0 ? successfulRecords[0].data : null;
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating task:", error?.response?.data?.message);
+      } else {
+        console.error(error);
+      }
+      return null;
+    }
   }
 
   async update(id, taskData) {
-    await this.delay();
-    const index = this.tasks.findIndex(task => task.Id === parseInt(id));
-    if (index !== -1) {
-      this.tasks[index] = {
-        ...this.tasks[index],
-        ...taskData,
-        Id: parseInt(id),
-        updatedAt: new Date().toISOString()
+    try {
+      const params = {
+        records: [{
+          Id: parseInt(id),
+          Name: taskData.title_c || taskData.Name,
+          title_c: taskData.title_c,
+          description_c: taskData.description_c,
+          task_type_c: taskData.task_type_c,
+          assignee_c: taskData.assignee_c,
+          due_date_c: taskData.due_date_c,
+          status_c: taskData.status_c,
+          updated_at_c: new Date().toISOString()
+        }]
       };
-      return { ...this.tasks[index] };
+      
+      const response = await this.apperClient.updateRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+      
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+        
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update tasks ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+        }
+        
+        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating task:", error?.response?.data?.message);
+      } else {
+        console.error(error);
+      }
+      return null;
     }
-    return null;
   }
 
   async delete(id) {
-    await this.delay();
-    const index = this.tasks.findIndex(task => task.Id === parseInt(id));
-    if (index !== -1) {
-      const deletedTask = { ...this.tasks[index] };
-      this.tasks.splice(index, 1);
-      return deletedTask;
+    try {
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
+      
+      const response = await this.apperClient.deleteRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return false;
+      }
+      
+      if (response.results) {
+        const successfulDeletions = response.results.filter(result => result.success);
+        const failedDeletions = response.results.filter(result => !result.success);
+        
+        if (failedDeletions.length > 0) {
+          console.error(`Failed to delete tasks ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
+        }
+        
+        return successfulDeletions.length > 0;
+      }
+      
+      return false;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting task:", error?.response?.data?.message);
+      } else {
+        console.error(error);
+      }
+      return false;
     }
-    return null;
   }
 
   async getByType(taskType) {
-    await this.delay();
-    return this.tasks.filter(task => task.taskType === taskType).map(task => ({ ...task }));
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "title_c" } },
+          { field: { Name: "description_c" } },
+          { field: { Name: "task_type_c" } },
+          { field: { Name: "assignee_c" } },
+          { field: { Name: "due_date_c" } },
+          { field: { Name: "status_c" } },
+          { field: { Name: "created_at_c" } },
+          { field: { Name: "updated_at_c" } }
+        ],
+        where: [
+          {
+            FieldName: "task_type_c",
+            Operator: "EqualTo",
+            Values: [taskType]
+          }
+        ]
+      };
+      
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+      
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching tasks by type:", error?.response?.data?.message);
+      } else {
+        console.error(error);
+      }
+      return [];
+    }
   }
 
   async getByStatus(status) {
-    await this.delay();
-    return this.tasks.filter(task => task.status === status).map(task => ({ ...task }));
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "title_c" } },
+          { field: { Name: "description_c" } },
+          { field: { Name: "task_type_c" } },
+          { field: { Name: "assignee_c" } },
+          { field: { Name: "due_date_c" } },
+          { field: { Name: "status_c" } },
+          { field: { Name: "created_at_c" } },
+          { field: { Name: "updated_at_c" } }
+        ],
+        where: [
+          {
+            FieldName: "status_c",
+            Operator: "EqualTo",
+            Values: [status]
+          }
+        ]
+      };
+      
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+      
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching tasks by status:", error?.response?.data?.message);
+      } else {
+        console.error(error);
+      }
+      return [];
+    }
   }
 }
 

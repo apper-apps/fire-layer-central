@@ -39,10 +39,10 @@ const TaskCard = ({ task, onEdit, onDelete }) => {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h3 className="font-semibold text-slate-800 mb-2">{task.title}</h3>
+<h3 className="font-semibold text-slate-800 mb-2">{task.title_c}</h3>
             <div className="flex items-center gap-2">
-              <Badge variant={getTaskTypeColor(task.taskType)}>
-                {task.taskType}
+              <Badge variant={getTaskTypeColor(task.task_type_c)}>
+                {task.task_type_c}
               </Badge>
               <Badge variant={getStatusVariant(task.status)}>
                 {task.status}
@@ -70,15 +70,14 @@ const TaskCard = ({ task, onEdit, onDelete }) => {
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        <p className="text-slate-600 text-sm mb-4 line-clamp-2">{task.description}</p>
-        
+<p className="text-slate-600 text-sm mb-4 line-clamp-2">{task.description_c}</p>
         <div className="space-y-2">
           <div className="flex items-center text-sm text-slate-600">
-            <ApperIcon name="User" className="h-4 w-4 mr-2" />
-            <span>{task.assignee}</span>
+<ApperIcon name="User" className="h-4 w-4 mr-2" />
+            <span>{task.assignee_c}</span>
           </div>
           
-          <div className={`flex items-center text-sm ${getDueDateColor(task.dueDate)}`}>
+<div className={`flex items-center text-sm ${getDueDateColor(task.due_date_c)}`}>
             <ApperIcon name="Calendar" className="h-4 w-4 mr-2" />
             <span>Due {format(new Date(task.dueDate), "MMM dd, yyyy")}</span>
           </div>
