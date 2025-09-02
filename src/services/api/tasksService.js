@@ -129,14 +129,59 @@ class TasksService {
     try {
       const params = {
         records: [{
-          Id: parseInt(id),
+Id: parseInt(id),
           Name: taskData.title_c || taskData.Name,
           title_c: taskData.title_c,
           description_c: taskData.description_c,
-          task_type_c: taskData.task_type_c,
           assignee_c: taskData.assignee_c,
           due_date_c: taskData.due_date_c,
           status_c: taskData.status_c,
+          task_type_c: taskData.task_type_c,
+          updated_at_c: new Date().toISOString()
+        }]
+      };
+
+      const response = await this.apperClient.updateRecord(this.tableName, params);
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update tasks ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+          
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              throw new Error(`${error.fieldLabel}: ${error}`);
+            });
+            if (record.message) throw new Error(record.message);
+          });
+        }
+
+        return successfulUpdates.map(result => result.data);
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating record in Task service:", error?.response?.data?.message);
+        throw new Error(error.response.data.message);
+      } else {
+        console.error(error);
+        throw error;
+      }
+    }
+  }
+
+  async updateStatus(id, status) {
+    try {
+      const tableName = 'task_c';
+      
+records: [{
+          Id: parseInt(id),
+          status_c: status,
           updated_at_c: new Date().toISOString()
         }]
       };

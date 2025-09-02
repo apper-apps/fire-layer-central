@@ -7,6 +7,15 @@ import ApperIcon from "@/components/ApperIcon";
 import tasksService from "@/services/api/tasksService";
 
 const TaskList = ({ tasks, onTasksChange, loading }) => {
+  const handleStatusChange = async (taskId, newStatus) => {
+    try {
+      await tasksService.updateStatus(taskId, newStatus);
+      toast.success(`Task status updated to ${newStatus}`);
+      onTasksChange();
+    } catch (error) {
+      toast.error("Failed to update task status");
+    }
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [deletingTaskId, setDeletingTaskId] = useState(null);
@@ -38,13 +47,19 @@ setDeletingTaskId(task.Id);
     }
   };
 
-  const handleSaveTask = async (formData) => {
-    if (editingTask) {
-await tasksService.update(editingTask.Id, formData);
-    } else {
-      await tasksService.create(formData);
+const handleSaveTask = async (formData) => {
+    try {
+      if (editingTask) {
+        await tasksService.update(editingTask.Id, formData);
+        toast.success("Task updated successfully");
+      } else {
+        await tasksService.create(formData);
+        toast.success("Task created successfully");
+      }
+      onTasksChange();
+    } catch (error) {
+      toast.error(editingTask ? "Failed to update task" : "Failed to create task");
     }
-    onTasksChange();
   };
 
   const handleCloseModal = () => {
@@ -123,8 +138,9 @@ await tasksService.update(editingTask.Id, formData);
             <div key={task.Id} className="relative">
               <TaskCard
                 task={task}
-                onEdit={handleEditTask}
+onEdit={handleEditTask}
                 onDelete={handleDeleteTask}
+                onStatusChange={handleStatusChange}
               />
               {deletingTaskId === task.Id && (
                 <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center">
