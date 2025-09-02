@@ -8,19 +8,54 @@ const Sidebar = ({ isOpen, onClose, className }) => {
   const [navigationItems, setNavigationItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadNavigation = async () => {
-      try {
-        const data = await navigationService.getAll();
-        setNavigationItems(data);
-      } catch (error) {
-        console.error("Failed to load navigation:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+// Static navigation structure
+  const staticNavigation = [
+    {
+      Id: 1,
+      label: "Dashboard",
+      path: "/",
+      icon: "LayoutDashboard",
+      children: []
+    },
+    {
+      Id: 2,
+      label: "Tasks",
+      path: "/tasks",
+      icon: "CheckSquare",
+      children: [
+        { Id: 21, label: "React", path: "/tasks?type=React", icon: "Code", children: [] },
+        { Id: 22, label: "Maintain", path: "/tasks?type=Maintain", icon: "Wrench", children: [] },
+        { Id: 23, label: "Improve", path: "/tasks?type=Improve", icon: "TrendingUp", children: [] }
+      ]
+    },
+    {
+      Id: 3,
+      label: "Toolbox",
+      path: "#",
+      icon: "Wrench",
+      children: [
+        { Id: 31, label: "Systems", path: "/systems", icon: "Server", children: [] },
+        { Id: 32, label: "Processes", path: "/processes", icon: "GitBranch", children: [] },
+        { Id: 33, label: "Equipment", path: "/equipment", icon: "Truck", children: [] },
+        { Id: 34, label: "Software", path: "/software", icon: "Monitor", children: [] },
+        { Id: 35, label: "Team", path: "/team", icon: "Users", children: [] },
+        { Id: 36, label: "Key Events", path: "/key-events", icon: "Calendar", children: [] },
+        { Id: 37, label: "Ideas", path: "/ideas", icon: "Lightbulb", children: [] }
+      ]
+    },
+    {
+      Id: 4,
+      label: "Reports",
+      path: "/reports",
+      icon: "BarChart3",
+      children: []
+    }
+  ];
 
-    loadNavigation();
+  useEffect(() => {
+    // Set static navigation and mark as loaded
+    setNavigationItems(staticNavigation);
+    setLoading(false);
   }, []);
 
   const sidebarContent = (
@@ -37,10 +72,10 @@ const Sidebar = ({ isOpen, onClose, className }) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-2 sidebar-scroll overflow-y-auto">
+<nav className="flex-1 px-4 py-6 space-y-2 sidebar-scroll overflow-y-auto">
         {loading ? (
           <div className="space-y-2">
-            {[...Array(6)].map((_, i) => (
+            {[...Array(4)].map((_, i) => (
               <div key={i} className="h-10 bg-white/10 rounded-lg animate-pulse" />
             ))}
           </div>
