@@ -22,8 +22,8 @@ const TaskModal = ({ isOpen, onClose, task, onSave }) => {
 
   useEffect(() => {
     if (task) {
-      setFormData({
-title: task.title_c || "",
+setFormData({
+        title: task.title_c || "",
         description: task.description_c || "",
         taskType: task.task_type_c || "React",
         assignee: task.assignee_c || "",

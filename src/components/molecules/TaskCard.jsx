@@ -44,8 +44,8 @@ const TaskCard = ({ task, onEdit, onDelete }) => {
               <Badge variant={getTaskTypeColor(task.task_type_c)}>
                 {task.task_type_c}
               </Badge>
-              <Badge variant={getStatusVariant(task.status)}>
-                {task.status}
+<Badge variant={getStatusVariant(task.status_c)}>
+                {task.status_c}
               </Badge>
             </div>
           </div>
@@ -70,16 +70,17 @@ const TaskCard = ({ task, onEdit, onDelete }) => {
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-<p className="text-slate-600 text-sm mb-4 line-clamp-2">{task.description_c}</p>
+<h3 className="font-semibold text-slate-800 mb-2 line-clamp-1">{task.title_c}</h3>
+        <p className="text-slate-600 text-sm mb-4 line-clamp-2">{task.description_c}</p>
         <div className="space-y-2">
           <div className="flex items-center text-sm text-slate-600">
 <ApperIcon name="User" className="h-4 w-4 mr-2" />
-            <span>{task.assignee_c}</span>
+            <span className="text-sm text-slate-600">{task.assignee_c}</span>
           </div>
           
 <div className={`flex items-center text-sm ${getDueDateColor(task.due_date_c)}`}>
             <ApperIcon name="Calendar" className="h-4 w-4 mr-2" />
-            <span>Due {format(new Date(task.dueDate), "MMM dd, yyyy")}</span>
+            <span>Due {format(new Date(task.due_date_c), "MMM dd, yyyy")}</span>
           </div>
         </div>
       </CardContent>
