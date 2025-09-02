@@ -82,17 +82,17 @@ class TasksService {
     }
   }
 
-  async create(taskData) {
+async create(taskData) {
     try {
       const params = {
         records: [{
-          Name: taskData.title_c || taskData.Name,
-          title_c: taskData.title_c,
-          description_c: taskData.description_c,
-          task_type_c: taskData.task_type_c,
-          assignee_c: taskData.assignee_c,
-          due_date_c: taskData.due_date_c,
-          status_c: taskData.status_c,
+          Name: taskData.title || taskData.Name || "Untitled Task",
+          title_c: taskData.title,
+          description_c: taskData.description,
+          task_type_c: taskData.taskType,
+          assignee_c: taskData.assignee,
+          due_date_c: taskData.dueDate,
+          status_c: taskData.status,
           created_at_c: new Date().toISOString(),
           updated_at_c: new Date().toISOString()
         }]
@@ -128,15 +128,15 @@ class TasksService {
   async update(id, taskData) {
     try {
       const params = {
-        records: [{
+records: [{
           Id: parseInt(id),
-          Name: taskData.title_c || taskData.Name,
-          title_c: taskData.title_c,
-          description_c: taskData.description_c,
-          task_type_c: taskData.task_type_c,
-          assignee_c: taskData.assignee_c,
-          due_date_c: taskData.due_date_c,
-          status_c: taskData.status_c,
+          Name: taskData.title || taskData.Name || "Untitled Task",
+          title_c: taskData.title,
+          description_c: taskData.description,
+          task_type_c: taskData.taskType,
+          assignee_c: taskData.assignee,
+          due_date_c: taskData.dueDate,
+          status_c: taskData.status,
           updated_at_c: new Date().toISOString()
         }]
       };
