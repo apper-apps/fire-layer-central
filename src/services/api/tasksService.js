@@ -175,11 +175,12 @@ Id: parseInt(id),
     }
   }
 
-  async updateStatus(id, status) {
+async updateStatus(id, status) {
     try {
       const tableName = 'task_c';
       
-records: [{
+      const params = {
+        records: [{
           Id: parseInt(id),
           status_c: status,
           updated_at_c: new Date().toISOString()
