@@ -6,27 +6,34 @@ import Button from "@/components/atoms/Button";
 import ApperIcon from "@/components/ApperIcon";
 import tasksService from "@/services/api/tasksService";
 
-const TaskList = ({ tasks, onTasksChange, loading }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState(null);
+const TaskList = ({ 
+  tasks, 
+  onTasksChange, 
+  loading, 
+  isModalOpen, 
+  onModalOpen, 
+  onModalClose, 
+  editingTask, 
+  onEditingTaskChange 
+}) => {
   const [deletingTaskId, setDeletingTaskId] = useState(null);
 
-  const handleCreateTask = () => {
-    setEditingTask(null);
-    setIsModalOpen(true);
+const handleCreateTask = () => {
+    onEditingTaskChange(null);
+    onModalOpen(true);
   };
 
   const handleEditTask = (task) => {
-    setEditingTask(task);
-    setIsModalOpen(true);
+    onEditingTaskChange(task);
+    onModalOpen(true);
   };
 
   const handleDeleteTask = async (task) => {
-    if (!window.confirm(`Are you sure you want to delete "${task.title}"?`)) {
+    if (!window.confirm(`Are you sure you want to delete "${task.title_c}"?`)) {
       return;
     }
 
-setDeletingTaskId(task.Id);
+    setDeletingTaskId(task.Id);
     try {
       await tasksService.delete(task.Id);
       onTasksChange();
@@ -37,21 +44,6 @@ setDeletingTaskId(task.Id);
       setDeletingTaskId(null);
     }
   };
-
-  const handleSaveTask = async (formData) => {
-    if (editingTask) {
-await tasksService.update(editingTask.Id, formData);
-    } else {
-      await tasksService.create(formData);
-    }
-    onTasksChange();
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setEditingTask(null);
-  };
-
   if (loading) {
     return (
       <div className="space-y-6">
@@ -95,7 +87,7 @@ await tasksService.update(editingTask.Id, formData);
             {tasks.length} {tasks.length === 1 ? "task" : "tasks"} total
           </p>
         </div>
-        <Button onClick={handleCreateTask} className="shadow-lg">
+<Button onClick={handleCreateTask} className="shadow-lg">
           <ApperIcon name="Plus" className="h-4 w-4 mr-2" />
           Add Task
         </Button>
@@ -112,7 +104,7 @@ await tasksService.update(editingTask.Id, formData);
           <p className="text-slate-600 mb-6 max-w-md mx-auto">
             Get started by creating your first task to organize your operations workflow.
           </p>
-          <Button onClick={handleCreateTask} className="shadow-lg">
+<Button onClick={handleCreateTask} className="shadow-lg">
             <ApperIcon name="Plus" className="h-4 w-4 mr-2" />
             Create First Task
           </Button>
@@ -121,7 +113,7 @@ await tasksService.update(editingTask.Id, formData);
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tasks.map((task) => (
             <div key={task.Id} className="relative">
-              <TaskCard
+<TaskCard
                 task={task}
                 onEdit={handleEditTask}
                 onDelete={handleDeleteTask}
@@ -136,12 +128,6 @@ await tasksService.update(editingTask.Id, formData);
         </div>
       )}
 
-      <TaskModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        task={editingTask}
-        onSave={handleSaveTask}
-      />
     </div>
   );
 };
